@@ -68,11 +68,14 @@ const Home = () => {
     try {
       setIsProcessing(true);
       console.log("Captured frame data:", imageData); // Debug log
-      const response = await fetch("http://localhost:5000/api/process-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: imageData }),
-      });
+    const backendUrl =
+      process.env.NEXT_PUBLIC_BACKEND_URL;
+    const response = await fetch(`${backendUrl}/api/process-image`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: imageData }),
+    });
+
 
       const data = await response.json();
       console.log("API response:", data); // Debug log
