@@ -29,7 +29,9 @@ instance/
 # Python-related
 *.bak
 *.swp
-
+*.tmp
+*.bak
+*.old
 # OS generated files
 .DS_Store
 Thumbs.db
