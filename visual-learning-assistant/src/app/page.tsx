@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useState, useRef, useCallback } from "react";
-import { Brain, Camera, Lightbulb, Volume2, VolumeX } from "lucide-react";
+import {
+  Brain,
+  Camera,
+  Lightbulb,
+  Volume2,
+  VolumeX,
+  FlipHorizontal,
+} from "lucide-react";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import {
   Card,
@@ -16,13 +23,20 @@ const Home = () => {
   const [solution, setSolution] = useState("");
   const [error, setError] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [useFrontCamera, setUseFrontCamera] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
   const startCamera = async () => {
     try {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: {
+          facingMode: useFrontCamera ? "user" : "environment",
+        },
         audio: false,
       });
 
@@ -41,8 +55,19 @@ const Home = () => {
   const stopCamera = () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
       setIsRecording(false);
-      setSolution("");
+      // Note: We don't clear the solution here anymore
+      // setSolution("");
+    }
+  };
+
+  const switchCamera = async () => {
+    setUseFrontCamera(!useFrontCamera);
+    if (isRecording) {
+      await startCamera();
     }
   };
 
@@ -67,18 +92,14 @@ const Home = () => {
   const processFrame = async (imageData: string) => {
     try {
       setIsProcessing(true);
-      console.log("Captured frame data:", imageData); // Debug log
-    const backendUrl =
-      process.env.NEXT_PUBLIC_BACKEND_URL;
-    const response = await fetch(`${backendUrl}/api/process-image`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: imageData }),
-    });
-
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+      const response = await fetch(`${backendUrl}/api/process-image`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: imageData }),
+      });
 
       const data = await response.json();
-      console.log("API response:", data); // Debug log
       if (data.solution) {
         setSolution(data.solution);
         if (!isMuted) {
@@ -140,6 +161,15 @@ const Home = () => {
                     <Volume2 className="w-5 h-5" />
                   )}
                 </button>
+                {isRecording && (
+                  <button
+                    onClick={switchCamera}
+                    className="p-3 rounded-full hover:bg-white/50 transition-all duration-300 text-gray-700"
+                    title="Switch Camera"
+                  >
+                    <FlipHorizontal className="w-5 h-5" />
+                  </button>
+                )}
                 <button
                   onClick={isRecording ? stopCamera : startCamera}
                   className={`flex items-center gap-2 px-6 py-3 rounded-full text-white transition-all duration-300 shadow-lg ${
