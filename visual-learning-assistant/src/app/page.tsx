@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useCallback } from "react";
-import { Camera, Volume2, VolumeX } from "lucide-react";
+import { Brain, Camera, Lightbulb, Volume2, VolumeX } from "lucide-react";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import {
   Card,
@@ -105,83 +105,134 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-4xl mx-auto">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <CardTitle className="text-2xl font-bold">
-              Visual Learning Assistant
-            </CardTitle>
-            <div className="flex gap-4">
-              <button
-                onClick={() => setIsMuted(!isMuted)}
-                className="p-2 rounded-full hover:bg-gray-100"
-              >
-                {isMuted ? <VolumeX /> : <Volume2 />}
-              </button>
-              <button
-                onClick={isRecording ? stopCamera : startCamera}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white ${
-                  isRecording
-                    ? "bg-red-500 hover:bg-red-600"
-                    : "bg-blue-500 hover:bg-blue-600"
-                }`}
-              >
-                <Camera size={20} />
-                {isRecording ? "Stop Camera" : "Start Camera"}
-              </button>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600 mb-2">
+            Visual Learning Assistant
+          </h1>
+          <p className="text-gray-600">
+            Capture, Learn, and Understand in Real-Time
+          </p>
+        </div>
+
+        <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0 overflow-hidden">
+          <CardHeader className="border-b bg-gradient-to-r from-purple-50 to-pink-50">
+            <div className="flex flex-row items-center justify-between space-y-0">
+              <div className="flex items-center gap-3">
+                <Brain className="w-8 h-8 text-purple-600" />
+                <CardTitle className="text-2xl font-bold text-gray-800">
+                  Smart Camera Analysis
+                </CardTitle>
+              </div>
+              <div className="flex gap-4 items-center">
+                <button
+                  onClick={() => setIsMuted(!isMuted)}
+                  className="p-3 rounded-full hover:bg-white/50 transition-all duration-300 text-gray-700"
+                  title={isMuted ? "Unmute" : "Mute"}
+                >
+                  {isMuted ? (
+                    <VolumeX className="w-5 h-5" />
+                  ) : (
+                    <Volume2 className="w-5 h-5" />
+                  )}
+                </button>
+                <button
+                  onClick={isRecording ? stopCamera : startCamera}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-full text-white transition-all duration-300 shadow-lg ${
+                    isRecording
+                      ? "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700"
+                      : "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  }`}
+                >
+                  <Camera className="w-5 h-5" />
+                  {isRecording ? "Stop Camera" : "Start Camera"}
+                </button>
+              </div>
             </div>
           </CardHeader>
 
-          <CardContent>
+          <CardContent className="p-6">
             {error && (
-              <Alert variant="destructive" className="mb-4">
-                <AlertDescription>{error}</AlertDescription>
+              <Alert
+                variant="destructive"
+                className="mb-6 border-red-200 bg-red-50"
+              >
+                <AlertDescription className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  {error}
+                </AlertDescription>
               </Alert>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="relative">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  className="w-full rounded-lg border"
-                  style={{ minHeight: "320px", backgroundColor: "#000" }}
-                />
-                {!isRecording && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 rounded-lg">
-                    <p className="text-white">Camera Off</p>
-                  </div>
-                )}
-                {isProcessing && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 rounded-lg">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
-                  </div>
-                )}
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg border">
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-lg font-semibold">Solution</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+                <div className="relative">
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    className="w-full rounded-xl border shadow-lg transition-transform duration-300 bg-gray-900"
+                    style={{ minHeight: "360px" }}
+                  />
+                  {!isRecording && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-900/70 rounded-xl backdrop-blur-sm">
+                      <p className="text-white flex items-center gap-2">
+                        <Camera className="w-5 h-5" /> Camera Off
+                      </p>
+                    </div>
+                  )}
                   {isProcessing && (
-                    <p className="text-sm text-blue-600">Processing...</p>
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-xl backdrop-blur-sm">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                        <p className="text-white text-sm font-medium">
+                          Processing...
+                        </p>
+                      </div>
+                    </div>
                   )}
                 </div>
-                <div className="min-h-[320px]">
+              </div>
+
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border shadow-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Lightbulb className="w-6 h-6 text-yellow-500" />
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      Solution
+                    </h2>
+                  </div>
+                  {isProcessing && (
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                      <p className="text-sm text-blue-600 font-medium">
+                        Processing...
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <div className="min-h-[360px] bg-white/50 rounded-lg p-4 backdrop-blur-sm">
                   {solution ? (
-                    <p className="whitespace-pre-wrap">{solution}</p>
-                  ) : (
-                    <p className="text-gray-500">
-                      Point your camera at a problem to get started...
+                    <p className="whitespace-pre-wrap text-gray-700 leading-relaxed">
+                      {solution}
                     </p>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-center">
+                      <p className="text-gray-500 flex flex-col items-center gap-3">
+                        <Camera className="w-8 h-8 text-gray-400" />
+                        Point your camera at a problem to get started...
+                      </p>
+                    </div>
                   )}
                 </div>
                 <button
                   onClick={handleCaptureClick}
                   disabled={!isRecording || isProcessing}
-                  className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50"
+                  className="mt-6 w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-full font-medium shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
+                  <Camera className="w-5 h-5" />
                   Capture Frame
                 </button>
               </div>
